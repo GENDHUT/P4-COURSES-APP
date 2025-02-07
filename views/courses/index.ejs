@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Courses</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .video-card {
+      transition: transform 0.3s ease-in-out;
+    }
+    .video-card:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="/">P4 Courses App</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link text-white" href="/">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-white" href="/videos">Videos</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Fungsi untuk Konversi URL YouTube -->
+  <%
+  function getEmbedUrl(url) {
+    const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+    const match = url.match(regex);
+    return match ? `https://www.youtube.com/embed/${match[1]}` : null;
+  }
+  %>
+
+  <!-- Konten Utama -->
+  <div class="container mt-4">
+    <h1 class="mb-4 text-center">📚 Daftar Courses</h1>
+    <div class="text-center">
+      <a href="/courses/create" class="btn btn-success mb-4">➕ Buat Course Baru</a>
+    </div>
+
+    <% courses.forEach(course => { %>
+      <div class="card mb-5 shadow-sm">
+        <div class="card-body">
+          <h2 class="card-title text-primary"><%= course.title %></h2>
+          <p class="card-text text-muted"><%= course.description %></p>
+          <a href="/courses/edit/<%= course.id %>" class="btn btn-warning btn-sm">✏ Edit</a>
+          <a href="/courses/delete/<%= course.id %>" class="btn btn-danger btn-sm" 
+             onclick="return confirm('Yakin ingin menghapus course ini?')">🗑 Delete</a>
+          
+          <!-- Video Cards dalam Course -->
+          <div class="row mt-3">
+            <% if (course.videos.length > 0) { %>
+              <% course.videos.slice(0, 6).forEach(video => { %> 
+                <div class="col-md-4 mb-3">
+                  <div class="card video-card shadow">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= video.title %></h5>
+                      <iframe width="100%" height="180"
+                        src="<%= getEmbedUrl(video.video_url) %>" 
+                        frameborder="0" allowfullscreen>
+                      </iframe>
+                      <a href="<%= video.video_url %>" class="btn btn-primary btn-sm mt-2" target="_blank">▶ Tonton</a>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p class="text-muted mt-3">⚠ Belum ada video untuk course ini.</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
